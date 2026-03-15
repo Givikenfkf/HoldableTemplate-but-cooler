@@ -41,8 +41,8 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
-      - name: Build arm64-v8a native library
-        run: ./gradlew assembleRelease -Pandroid.injected.build.abi=arm64-v8a
+      - name: Build arm64-v8a .so (native only, no APK)
+        run: ./gradlew app:externalNativeBuildRelease -Pandroid.injected.build.abi=arm64-v8a
 
       - name: Locate compiled .so files
         run: find . -name "*.so" -path "*/arm64-v8a/*"
@@ -52,13 +52,5 @@ jobs:
         with:
           name: arm64-v8a-lib
           path: app/build/intermediates/cmake/release/obj/arm64-v8a/*.so
-          if-no-files-found: warn
-          retention-days: 30
-
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: release-apk
-          path: app/build/outputs/apk/release/*.apk
-          if-no-files-found: warn
+          if-no-files-found: error
           retention-days: 30
