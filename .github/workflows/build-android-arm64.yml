@@ -29,6 +29,11 @@ jobs:
           echo "NDK_HOME=$NDK_PATH" >> $GITHUB_ENV
           echo "Using NDK: $NDK_PATH"
 
+      - name: Fix include path case (Linux is case-sensitive)
+        run: |
+          sed -i 's|#include "include/Menu/ModMenu.hpp"|#include "Include/Menu/ModMenu.hpp"|g' \
+            app/src/main/cpp/native-lib.cpp
+
       - name: Cache Gradle packages
         uses: actions/cache@v4
         with:
