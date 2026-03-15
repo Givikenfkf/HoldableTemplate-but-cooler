@@ -1,8 +1,9 @@
 #pragma once
-#include "../BNMResolve.hpp"
+#include "BNMResolve.hpp"
 #include <cmath>
 #include <cstdlib>
-#include "../Menu/Settings.hpp"
+#include "BNMIncludes.hpp"
+#include "Menu/Settings.hpp"
 
 struct GunData {
     RaycastHit raycastHit;
@@ -90,5 +91,11 @@ public:
             }
             gunLine = nullptr;
         }
+    }
+};
+
+class Patches {
+    void patchAll() {
+        //soon im trying to learn how tf to do this
     }
 };

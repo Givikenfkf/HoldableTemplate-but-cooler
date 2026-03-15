@@ -5,7 +5,7 @@
 #include "../httplib.h"
 #include "../json.hpp"
 #include "../XRInput.hpp"
-#include "GunLib.hpp"
+#include "../ModUtils.hpp"
 
 class MovementMods {
 private:
