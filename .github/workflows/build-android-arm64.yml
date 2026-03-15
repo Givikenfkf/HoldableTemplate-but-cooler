@@ -22,13 +22,12 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Set up Android NDK
-        uses: android-actions/setup-android@v3
-        with:
-          accept-android-sdk-licenses: true
-          packages: |
-            ndk;27.2.12479018
-            cmake;3.22.1
+      - name: Pick latest pre-installed NDK
+        run: |
+          NDK_PATH=$(ls -d $ANDROID_SDK_ROOT/ndk/* | sort -V | tail -1)
+          echo "ANDROID_NDK_HOME=$NDK_PATH" >> $GITHUB_ENV
+          echo "NDK_HOME=$NDK_PATH" >> $GITHUB_ENV
+          echo "Using NDK: $NDK_PATH"
 
       - name: Cache Gradle packages
         uses: actions/cache@v4
@@ -43,29 +42,20 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Build arm64-v8a native library
-        run: ./gradlew assembleRelease
-        env:
-          ANDROID_ABI: arm64-v8a
+        run: ./gradlew assembleRelease -Pandroid.injected.build.abi=arm64-v8a
 
       - name: Locate compiled .so files
-        run: |
-          echo "=== Built .so files ==="
-          find . -name "*.so" -path "*/arm64-v8a/*" | tee built_libs.txt
-          echo ""
-          echo "=== All build outputs ==="
-          find ./app/build/outputs -type f 2>/dev/null || echo "No outputs directory found"
+        run: find . -name "*.so" -path "*/arm64-v8a/*"
 
-      - name: Upload arm64-v8a library
+      - name: Upload arm64-v8a .so
         uses: actions/upload-artifact@v4
         with:
           name: arm64-v8a-lib
-          path: |
-            app/build/intermediates/cmake/release/obj/arm64-v8a/*.so
-            app/build/outputs/**/*.so
+          path: app/build/intermediates/cmake/release/obj/arm64-v8a/*.so
           if-no-files-found: warn
           retention-days: 30
 
-      - name: Upload full APK (contains the .so)
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: release-apk
